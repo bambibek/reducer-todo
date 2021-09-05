@@ -4,3 +4,16 @@
     margin-top: 20px;
     outline: none;
 }
+
+.display{
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin-top: 10px;
+    align-items: center;
+}
+
+.isCompleted{
+    text-decoration: line-through;
+    
+}

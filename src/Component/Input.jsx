@@ -1,40 +1,75 @@
 
 import "./input.css"
-import { useState } from "react"
+import { useState, useReducer } from "react"
+
+const reducer = (state, action) => {
+
+    switch (action.type) {
+        case "ADD":
+            return [
+                ...state,
+                action.payload
+            ]
+
+        case "DELETE":
+            return state.filter((items) => items.id !== action.payload)
+
+        case "DONE":
+            return state.map((items) => items.id === action.payload ? { ...items, isDone: !items.isDone } : items)
+
+        default:
+            return state
+    }
+}
+
 
 const Input = () => {
 
     const [myInput, setMyInput] = useState("")
-    const [myList, setMyList] = useState([])
+    const [state, dispatch] = useReducer(reducer, [])
 
 
     const handleChange = (event) => {
         setMyInput(event.target.value)
     }
-    //ruduce this one
-    //CRUD operation in cases
-    const onSave = (event) => {
-        setMyList((item) => [...item, myInput])
+
+    const handleSave = () => {
+        dispatch({
+            type: "ADD", payload: {
+                id: Date.now(),
+                title: myInput,
+                isDone: false
+            }
+        })
     }
 
-    console.log(`my input = ${ myInput }`)
-    console.log(`list array: ${ myList }`)
+    const handleDel = (itemId) => {
+        dispatch({ type: "DELETE", payload: itemId })
+    }
+
+    const isComplete = (itemId) => {
+        dispatch({ type: "DONE", payload: itemId })
+    }
 
 
+    console.log(state)
     return <>
 
         <form>
-            <input onChange={handleChange} className="myInput" type="text" placeholder="What are your plans for the day." />
+            <input onChange={handleChange} value={myInput} className="myInput" type="text" placeholder="What are your plans for the day." />
         </form>
 
         <br />
-        <button onClick={onSave}>Save</button>
-        <button >Delete</button>
+        <button onClick={handleSave}>Save</button>
         <button >Edit</button>
         <button >Mark Done</button>
         <div>
-            {myList.map((item, ) => {
-                return <p>{item}</p>
+            {state.map((item) => {
+                return <div key={item.id} className="display">
+                    <input type="checkbox" checked={item.isDone} onChange={() => isComplete(item.id)} />
+                    <p>{item.title}</p>
+                    <button onClick={() => handleDel(item.id)} >Del</button>
+                </div>
             })}
 
         </div>
